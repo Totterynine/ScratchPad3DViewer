@@ -5,7 +5,7 @@ class ITexture;
 class Vector;
 
 // I would just merge this into CSteamAppLoader, but it makes such a mess
-class CImGuiSourceApp
+class CScratchPad3DViewer
 {
 public:
 	void Init();

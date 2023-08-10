@@ -6,9 +6,8 @@
 
 $Macro SRCDIR		".."
 $Macro OUTBINDIR	"$SRCDIR\..\game\bin"
-$Macro OUTBINNAME	"exampleapp"
+$Macro OUTBINNAME	"scratchpad3dviewer"
 $Macro PUBLIC		"$SRCDIR\public"
-
 
 $Include "$SRCDIR\vpc_scripts\source_exe_con_base.vpc"
 

@@ -33,14 +33,15 @@ CDummyMaterialProxyFactory g_DummyMaterialProxyFactory;
 
 
 
-void CImGuiSourceApp::Init()
+void CScratchPad3DViewer::Init()
 {
 	if (!glfwInit())
 		return;
 
 	// We're handled by matsys, no api
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	m_pWindow = glfwCreateWindow(640, 480, "Example Dear ImGui Source App", NULL, NULL);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+	m_pWindow = glfwCreateWindow(1280, 720, "ScrachPad3D Viewer", NULL, NULL);
 	if (!m_pWindow)
 		return;
 
@@ -94,7 +95,7 @@ void CImGuiSourceApp::Init()
 	}
 }
 
-void CImGuiSourceApp::Destroy()
+void CScratchPad3DViewer::Destroy()
 {
 	ImGui_ImplSource_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
@@ -111,10 +112,7 @@ void CImGuiSourceApp::Destroy()
 	glfwTerminate();
 }
 
-// Current model in use
-static char s_modelName[256] = "models/barney.mdl";
-
-void CImGuiSourceApp::DrawFrame()
+void CScratchPad3DViewer::DrawFrame()
 {
 	// What's our delta time?
 	float curTime = glfwGetTime();
@@ -154,12 +152,12 @@ void CImGuiSourceApp::DrawFrame()
 	ctx->LoadMatrix(viewMatrix);
 
 	// Draw our model
-	static CStudioModel* model = new CStudioModel(s_modelName);
-	static QAngle ang = { 0, 0,0 };
-	static Vector pos = -model->Center();
-	model->m_time = curTime;
-	model->m_sequence = 40;
-	model->Draw(pos, ang);
+	// static CStudioModel* model = new CStudioModel(s_modelName);
+	// static QAngle ang = { 0, 0,0 };
+	// static Vector pos = -model->Center();
+	// model->m_time = curTime;
+	// model->m_sequence = 40;
+	// model->Draw(pos, ang);
 
 	// Mouse input
 	// If we're dragging a window, we don't want to be dragging our model too
@@ -193,20 +191,20 @@ void CImGuiSourceApp::DrawFrame()
 	}
 
 	// Model Properties
-	if (ImGui::Begin("Model"))
-	{
-		ImGui::InputText("Path", s_modelName, sizeof(s_modelName));
-		ImGui::SameLine();
-		if (ImGui::Button("Apply"))
-		{
-			delete model;
-			model = new CStudioModel(s_modelName);
-		}
+	// if (ImGui::Begin("Model"))
+	// {
+	// 	ImGui::InputText("Path", s_modelName, sizeof(s_modelName));
+	// 	ImGui::SameLine();
+	// 	if (ImGui::Button("Apply"))
+	// 	{
+	// 		delete model;
+	// 		model = new CStudioModel(s_modelName);
+	// 	}
 		
-		ImGui::InputFloat3("pos", pos.Base());
-		ImGui::SliderFloat3("ang", ang.Base(), -360, 360);
-	}
-	ImGui::End();
+	// 	ImGui::InputFloat3("pos", pos.Base());
+	// 	ImGui::SliderFloat3("ang", ang.Base(), -360, 360);
+	// }
+	// ImGui::End();
 
 	ImGui::ShowDemoWindow();
 
