@@ -9,7 +9,7 @@ if %A_ERRORLEVEL% neq 0 goto missingCMake
 
 @REM DearImGui
 cd thirdparty
-xcopy /y /f imconfig_but_in_a_different_folder_so_i_dont_have_another_repo.h imgui\imconfig.h
+xcopy /y /f imconfig_source.h imgui\imconfig.h
 
 @REM GLFW
 cd glfw
