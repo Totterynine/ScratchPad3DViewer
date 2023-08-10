@@ -4,7 +4,7 @@
 //	Project Script
 //-----------------------------------------------------------------------------
 
-$Macro SRCDIR		".."
+$Macro SRCDIR		"..\.."
 $Macro OUTBINDIR	"$SRCDIR\..\game\bin"
 $Macro OUTBINNAME	"scratchpad3dviewer"
 $Macro PUBLIC		"$SRCDIR\public"
@@ -29,7 +29,7 @@ $Configuration
 	}
 }
 
-$Project "Example ImGui Source App"
+$Project "ScratchPad3D Viewer"
 {
 	$Folder	"Dear ImGui"
 	{

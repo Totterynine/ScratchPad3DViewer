@@ -141,7 +141,7 @@ int CSteamAppLoader::Main()
 	g_pMaterialSystem->ModInit();
 
 	// Starts up the app and runs the main loop
-	CImGuiSourceApp* app = new CImGuiSourceApp;
+	CScratchPad3DViewer* app = new CScratchPad3DViewer();
 	app->Init();
 	app->Destroy();
 	delete app;
