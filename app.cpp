@@ -3,7 +3,6 @@
 #include "materialsystem/ITexture.h"
 #include "materialsystem/MaterialSystem_Config.h"
 #include "istudiorender.h"
-#include "tier2/camerautils.h"
 
 #include "studiomodel.h"
 
@@ -20,6 +19,7 @@
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
+#include "scratchpaddoc.h"
 
 // Currently blank, but might be worth filling in if you need mat proxies
 class CDummyMaterialProxyFactory : public IMaterialProxyFactory
@@ -140,10 +140,8 @@ void CScratchPad3DViewer::DrawFrame()
 	// Make us a nice camera
 	VMatrix viewMatrix;
 	VMatrix projMatrix;
-	static float zoom = 120.0;
-	static Camera_t cam = { {-zoom, 0, 0}, {0, 0, 0}, 65, 1.0f, 20000.0f };
-	ComputeViewMatrix(&viewMatrix, cam);
-	ComputeProjectionMatrix(&projMatrix, cam, w, h);
+	ComputeViewMatrix(&viewMatrix, View);
+	ComputeProjectionMatrix(&projMatrix, View, w, h);
 
 	// 3D Rendering mode
 	ctx->MatrixMode(MATERIAL_PROJECTION);
@@ -165,12 +163,12 @@ void CScratchPad3DViewer::DrawFrame()
 	{
 		// Slow down our zoom as we get closer in for finer movements
 		float mw = io.MouseWheel;
-		mw *= zoom / 20.0f;
+		mw *= ViewZoom / 20.0f;
 		
 		// Don't allow zooming into and past our model
-		zoom += mw;
-		if (zoom <= 1)
-			zoom = 1;
+		ViewZoom += ViewZoom;
+		if (ViewZoom <= 1)
+			ViewZoom = 1;
 
 		// Camera rotation
 		float x = io.MousePos.x;
@@ -178,16 +176,35 @@ void CScratchPad3DViewer::DrawFrame()
 		static float ox = 0, oy = 0;
 		if (io.MouseDown[0])
 		{
-			cam.m_angles.y -= x - ox;
-			cam.m_angles.x += y - oy;
+			View.m_angles.y -= x - ox;
+			View.m_angles.x += y - oy;
+
+			Vector forward, right, up;
+			AngleVectors(View.m_angles, &forward, &right, &up);
+
+			float moveScale = ViewZoom / 10.0f;
+
+			// Keyboard input
+			if (ImGui::IsKeyDown(ImGuiKey_W))
+			{
+				View.m_origin += forward * moveScale;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_S))
+			{
+				View.m_origin -= forward * moveScale;
+			}
+
+			if (ImGui::IsKeyDown(ImGuiKey_A))
+			{
+				View.m_origin -= right * moveScale;
+			}
+			if (ImGui::IsKeyDown(ImGuiKey_D))
+			{
+				View.m_origin += right * moveScale;
+			}
 		}
 		ox = x;
 		oy = y;
-
-		// Set the camera to its new position
-		Vector forward;
-		AngleVectors(cam.m_angles, &forward);
-		cam.m_origin = forward * -zoom;
 	}
 
 	// Model Properties
