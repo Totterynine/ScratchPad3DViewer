@@ -59,6 +59,8 @@ $Project "ScratchPad3D Viewer"
 			$File "$PUBLIC\studio.cpp"
 			$File "$PUBLIC\bone_setup.cpp"
 			$File "$PUBLIC\CollisionUtils.cpp"
+			$File "$PUBLIC\ScratchPad3D.cpp"
+			$File "$PUBLIC\ScratchPad3D.h"
 		}
 		$File "imgui_impl_source.h"
 		$File "imgui_impl_source.cpp"
