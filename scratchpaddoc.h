@@ -10,6 +10,8 @@
 
 #include <functional>
 
+extern IFileSystem* g_pFileSystem;
+
 class ScratchPadDocument
 {
 public:
@@ -22,7 +24,7 @@ public:
 
 	ScratchPadDocument(const char* filename)
 	{
-		ScratchPad = new CScratchPad3D(filename, g_pFullFileSystem, false);
+		ScratchPad = new CScratchPad3D(filename, g_pFileSystem, false);
 	}
 
 	bool Init()
