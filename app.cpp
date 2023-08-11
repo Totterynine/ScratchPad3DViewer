@@ -182,7 +182,7 @@ void CScratchPad3DViewer::DrawFrame()
 			Vector forward, right, up;
 			AngleVectors(View.m_angles, &forward, &right, &up);
 
-			float moveScale = ViewZoom / 10.0f;
+			float moveScale = ViewZoom * dt;
 
 			// Keyboard input
 			if (ImGui::IsKeyDown(ImGuiKey_W))
