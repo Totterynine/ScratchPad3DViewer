@@ -166,7 +166,7 @@ void CScratchPad3DViewer::DrawFrame()
 		mw *= ViewZoom / 20.0f;
 		
 		// Don't allow zooming into and past our model
-		ViewZoom += ViewZoom;
+		ViewZoom += mw;
 		if (ViewZoom <= 1)
 			ViewZoom = 1;
 
