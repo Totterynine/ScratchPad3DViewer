@@ -238,6 +238,8 @@ void CScratchPad3DViewer::DrawFrame()
 	if (Document)
 		Document->Draw(pRenderContext);
 
+	pRenderContext.SafeRelease();
+
 	ImGui_ImplSource_RenderDrawData(ImGui::GetDrawData());
 
 	// End Frame

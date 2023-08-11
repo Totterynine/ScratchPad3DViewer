@@ -86,19 +86,27 @@ private:
 	{
 		CScratchPad3D::CCommand_Polygon* cmd = (CScratchPad3D::CCommand_Polygon*)pInCmd;
 
-		IMesh* mesh = pRenderContext->GetDynamicMesh(true, nullptr, nullptr, Unlit);
+		pRenderContext->Bind(Unlit);
+		IMesh* mesh = pRenderContext->GetDynamicMesh();
 		CMeshBuilder meshBuilder;
 		int nVerts = min(64, cmd->m_Verts.Size());
 		meshBuilder.Begin(mesh, MATERIAL_POLYGON, nVerts);
 
+
 		for (auto vert : cmd->m_Verts)
 		{
+
+			Vector col = vert.m_vColor.m_vColor;
+			unsigned char r = LinearToGamma(col.x) * 255.0f, g = LinearToGamma(col.y) * 255.0f, b = LinearToGamma(col.z) * 255.0f;
+
+			meshBuilder.Color4ub(r, g, b, 255);
+			meshBuilder.TexCoord2f(0, 0, 0);
 			meshBuilder.Position3fv(vert.m_vPos.Base());
-			meshBuilder.Color4fv((float*)&vert.m_vColor);
 			meshBuilder.AdvanceVertex();
 		}
 
-		meshBuilder.End(false, true);
+		meshBuilder.End();
+		mesh->Draw();
 	}
 
 	void Command_SetMatrix(CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)
