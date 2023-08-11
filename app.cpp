@@ -30,8 +30,15 @@ public:
 };
 CDummyMaterialProxyFactory g_DummyMaterialProxyFactory;
 
+void* ImGui_MemAlloc(size_t sz, void* user_data)
+{
+	return MemAlloc_Alloc(sz, "ImGui", 0);
+}
 
-
+static void ImGui_MemFree(void* ptr, void* user_data)
+{
+	MemAlloc_Free(ptr);
+}
 
 void CScratchPad3DViewer::Init()
 {
@@ -78,6 +85,7 @@ void CScratchPad3DViewer::Init()
 	g_pStudioRender->SetAmbientLightColors(m_ambientLightColors);
 	
 	// Init Dear ImGui
+	ImGui::SetAllocatorFunctions(ImGui_MemAlloc, ImGui_MemFree, nullptr);
 	ImGui::CreateContext();
 	ImGui_ImplSource_Init();
 	ImGui::StyleColorsDark();
