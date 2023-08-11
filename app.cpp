@@ -157,14 +157,6 @@ void CScratchPad3DViewer::DrawFrame()
 	ctx->MatrixMode(MATERIAL_VIEW);
 	ctx->LoadMatrix(viewMatrix);
 
-	// Draw our model
-	// static CStudioModel* model = new CStudioModel(s_modelName);
-	// static QAngle ang = { 0, 0,0 };
-	// static Vector pos = -model->Center();
-	// model->m_time = curTime;
-	// model->m_sequence = 40;
-	// model->Draw(pos, ang);
-
 	// Mouse input
 	// If we're dragging a window, we don't want to be dragging our model too
 	if (!io.WantCaptureMouse)
@@ -215,23 +207,28 @@ void CScratchPad3DViewer::DrawFrame()
 		oy = y;
 	}
 
-	// Model Properties
-	// if (ImGui::Begin("Model"))
-	// {
-	// 	ImGui::InputText("Path", s_modelName, sizeof(s_modelName));
-	// 	ImGui::SameLine();
-	// 	if (ImGui::Button("Apply"))
-	// 	{
-	// 		delete model;
-	// 		model = new CStudioModel(s_modelName);
-	// 	}
-		
-	// 	ImGui::InputFloat3("pos", pos.Base());
-	// 	ImGui::SliderFloat3("ang", ang.Base(), -360, 360);
-	// }
-	// ImGui::End();
+	if (ImGui::Begin("Document"))
+	{
+		static char s_PadFilename[MAX_PATH] = "scratch.pad";
+		ImGui::InputText("Path", s_PadFilename, sizeof(s_PadFilename));
+		ImGui::SameLine();
+		if (ImGui::Button("Apply"))
+		{
+			if (Document)
+				delete Document;
 
-	ImGui::ShowDemoWindow();
+			Document = new ScratchPadDocument(s_PadFilename);
+
+			if (!Document->Init())
+			{
+				Msg("Failed to load %s file\n", s_PadFilename);
+
+				delete Document;
+				Document = nullptr;
+			}
+		}
+	}
+	ImGui::End();
 
 	// End ImGui, and let it draw
 	ImGui::Render();

@@ -20,6 +20,11 @@ public:
 		ScratchPad = new CScratchPad3D(filename, g_pFullFileSystem, false);
 	}
 
+	bool Init()
+	{
+		return ScratchPad->LoadCommandsFromFile();
+	}
+
 	void Draw(IMatRenderContext* pRenderContext)
 	{
 		int iLastCmd = -1;
