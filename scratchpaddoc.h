@@ -29,7 +29,7 @@ public:
 
 	bool Init()
 	{
-		Unlit.Init("ScratchPad_Unlit", new KeyValues("UnlitGeneric", "$vertexcolor", "1"));
+		Unlit.Init("ScratchPad_Unlit", new KeyValues("UnlitGeneric", "$basetexture", "white", "$vertexcolor", "1"));
 		return ScratchPad->LoadCommandsFromFile();
 	}
 
