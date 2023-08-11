@@ -232,6 +232,12 @@ void CScratchPad3DViewer::DrawFrame()
 
 	// End ImGui, and let it draw
 	ImGui::Render();
+
+	CMatRenderContextPtr pRenderContext(g_pMaterialSystem);
+
+	if (Document)
+		Document->Draw(pRenderContext);
+
 	ImGui_ImplSource_RenderDrawData(ImGui::GetDrawData());
 
 	// End Frame

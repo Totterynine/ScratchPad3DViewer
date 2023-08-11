@@ -5,6 +5,10 @@
 #include "ScratchPadUtils.h"
 #include "materialsystem/imaterialsystem.h"
 #include "materialsystem/imesh.h"
+#include "materialsystem/MaterialSystemUtil.h"
+#include "KeyValues.h"
+
+#include <functional>
 
 class ScratchPadDocument
 {
@@ -12,6 +16,7 @@ public:
 
 	~ScratchPadDocument()
 	{
+		Unlit.Shutdown();
 		delete ScratchPad;
 	}
 
@@ -22,6 +27,7 @@ public:
 
 	bool Init()
 	{
+		Unlit.Init("ScratchPad_Unlit", new KeyValues("UnlitGeneric", "$vertexcolor", "1"));
 		return ScratchPad->LoadCommandsFromFile();
 	}
 
@@ -65,10 +71,10 @@ private:
 	{
 	}
 
-	void Command_Line_Start(CScratchPad3D::CBaseCommand* pInCmd)
+	void Command_Line_Start(IMatRenderContext* pRenderContext)
 	{
 	}
-	void Command_Line_End(CScratchPad3D::CBaseCommand* pInCmd)
+	void Command_Line_End(IMatRenderContext* pRenderContext)
 	{
 	}
 
@@ -80,7 +86,7 @@ private:
 	{
 		CScratchPad3D::CCommand_Polygon* cmd = (CScratchPad3D::CCommand_Polygon*)pInCmd;
 
-		IMesh* mesh = pRenderContext->GetDynamicMesh();
+		IMesh* mesh = pRenderContext->GetDynamicMesh(true, nullptr, nullptr, Unlit);
 		CMeshBuilder meshBuilder;
 		int nVerts = min(64, cmd->m_Verts.Size());
 		meshBuilder.Begin(mesh, MATERIAL_POLYGON, nVerts);
@@ -89,6 +95,7 @@ private:
 		{
 			meshBuilder.Position3fv(vert.m_vPos.Base());
 			meshBuilder.Color4fv((float*)&vert.m_vColor);
+			meshBuilder.AdvanceVertex();
 		}
 
 		meshBuilder.End(false, true);
@@ -106,11 +113,13 @@ private:
 	{
 	}
 
+	CMaterialReference Unlit;
+
 	CScratchPad3D *ScratchPad = nullptr;
 
-	using CommandRenderFunction_Start = void (*)(IMatRenderContext* pRenderContext);
-	using CommandRenderFunction_Stop = void (*)(IMatRenderContext* pRenderContext);
-	using CommandRenderFunction = void (*)(CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext);
+	using CommandRenderFunction_Start = std::function<void(IMatRenderContext* pRenderContext)>;
+	using CommandRenderFunction_Stop = std::function<void(IMatRenderContext* pRenderContext)>;
+	using CommandRenderFunction = std::function<void(CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)>;
 
 	struct CCommandRenderFunctions
 	{
@@ -121,15 +130,15 @@ private:
 
 	CCommandRenderFunctions CommandRenderFunctions[CScratchPad3D::COMMAND_NUMCOMMANDS] =
 	{
-		{ NULL, NULL,(CommandRenderFunction)&[&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_RenderPoint(pInCmd, pRenderContext); }},
+		{ NULL, NULL,(CommandRenderFunction)[&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_RenderPoint(pInCmd, pRenderContext); }},
 		{ 
-			(CommandRenderFunction_Start)& [&](CScratchPad3D::CBaseCommand* pInCmd)->void { Command_Line_Start(pInCmd); },
-			(CommandRenderFunction_Stop)& [&](CScratchPad3D::CBaseCommand* pInCmd)->void { Command_Line_End(pInCmd); },
-			(CommandRenderFunction) & [&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_RenderLine(pInCmd, pRenderContext); } 
+			[&](IMatRenderContext* pRenderContext)->void { Command_Line_Start(pRenderContext); },
+			[&](IMatRenderContext* pRenderContext)->void { Command_Line_End(pRenderContext); },
+			[&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_RenderLine(pInCmd, pRenderContext); } 
 		},
-		{ NULL, NULL, (CommandRenderFunction) & [&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_RenderPolygon(pInCmd, pRenderContext); } },
-		{ NULL, NULL, (CommandRenderFunction) & [&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_SetMatrix(pInCmd, pRenderContext); } },
-		{ NULL, NULL, (CommandRenderFunction) & [&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_SetRenderState(pInCmd, pRenderContext); } },
-		{ NULL, NULL, (CommandRenderFunction) & [&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_RenderText(pInCmd, pRenderContext); } }
+		{ NULL, NULL, [&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_RenderPolygon(pInCmd, pRenderContext); } },
+		{ NULL, NULL, [&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_SetMatrix(pInCmd, pRenderContext); } },
+		{ NULL, NULL, [&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_SetRenderState(pInCmd, pRenderContext); } },
+		{ NULL, NULL, [&](CScratchPad3D::CBaseCommand* pInCmd, IMatRenderContext* pRenderContext)->void { Command_RenderText(pInCmd, pRenderContext); } }
 	};
 };
